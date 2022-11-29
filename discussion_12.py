@@ -16,7 +16,10 @@ def setUpDatabase(db_name):
 # TASK 1
 # CREATE TABLE FOR EMPLOYEE INFORMATION IN DATABASE AND ADD INFORMATION
 def create_employee_table(cur, conn):
-    cur.execute('CREATE TABLE IF NOT EXISTS employees (employee_id INTEGER PRIMARY KEY, first_name TEXT, last_name TEXT, job_id INTEGER, hire_data TEXT, salary NUMERIC')
+    cur.execute("DROP TABLE IF EXISTS employees")
+    cur.execute("CREATE TABLE IF NOT EXISTS employees (employee_id INTEGER PRIMARY KEY, first_name STRING,\
+         last_name STRING, job_id INTEGER, hire_date TEXT, salary INTEGER)")
+    conn.commit()
     pass
 
 # ADD EMPLOYEE'S INFORMTION TO THE TABLE
@@ -30,12 +33,24 @@ def add_employee(filename, cur, conn):
     # THE REST IS UP TO YOU
     json_data = json.loads(file_data)
     for row in json_data:
-        cur.excute('INSERT INTO employees (employee_id , first_name, last_name, job_id, hire_data, salary) VALUES(?,?,?,?,?,?)')
+        id = row["employee_id"]
+        f_name = row["first_name"]
+        l_name = row["last_name"]
+        date = row["hire_date"]
+        job = row["job_id"]
+        sal = row["salary"]
+
+        cur.execute('INSERT INTO employees (employee_id , first_name, last_name, job_id, hire_date, salary) VALUES(?,?,?,?,?,?)', (id, f_name, l_name, date, job, sal))
     conn.commit()
     pass
 
 # TASK 2: GET JOB AND HIRE_DATE INFORMATION
 def job_and_hire_date(cur, conn):
+    cur.execute('SELECT Employees.hore_date, Jobs.job_title FROM Employees JOIN Jobs ON Jobs.job_id = Employees.job_id')
+    res = cur.fetchall()
+    conn.commit()
+    s = sorted(res, key=lambda x: x[0])
+    return s[0][1]
     pass
 
 # TASK 3: IDENTIFY PROBLEMATIC SALARY DATA
